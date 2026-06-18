@@ -1,13 +1,10 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-
 import { AuthPageLayout } from '@vben/layouts';
-import { preferences } from '@vben/preferences';
 
 import { $t } from '#/locales';
 
-const appName = computed(() => preferences.app.name);
-const logo = computed(() => preferences.logo.source);
+const appName = import.meta.env.VITE_APP_TITLE || '码蚁AI ADMIN';
+const logo = '/mayi-logo.png';
 </script>
 
 <template>
@@ -17,7 +14,21 @@ const logo = computed(() => preferences.logo.source);
     :page-description="$t('authentication.pageDesc')"
     :page-title="$t('authentication.pageTitle')"
   >
-    <!-- 自定义工具栏 -->
-    <!-- <template #toolbar></template> -->
+    <template #logo>
+      <div class="absolute left-0 top-0 z-10 flex flex-1">
+        <div
+          class="text-foreground lg:text-foreground ml-4 mt-4 flex flex-1 items-center sm:left-6 sm:top-6"
+        >
+          <img
+            :alt="appName"
+            :src="logo"
+            class="mr-2 h-[42px] w-[42px] object-contain"
+          />
+          <p class="m-0 text-xl font-medium">
+            {{ appName }}
+          </p>
+        </div>
+      </div>
+    </template>
   </AuthPageLayout>
 </template>

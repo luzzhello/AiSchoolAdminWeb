@@ -12,14 +12,40 @@ import { DictEnum } from '@vben/constants';
 import { $t } from '@vben/locales';
 import { cloneDeep } from '@vben/utils';
 
-import { Form, FormItem, Input, RadioGroup } from 'ant-design-vue';
+import { Form, FormItem, Input, RadioGroup, Select } from 'ant-design-vue';
 import { pick } from 'lodash-es';
 
 import { noticeAdd, noticeInfo, noticeUpdate } from '#/api/system/notice';
+import { dictDataInfo } from '#/api/system/dict/dict-data';
 import { Tinymce } from '#/components/tinymce';
 import { contentWithOssIdTransform } from '#/components/tinymce/src/helper';
+import { useDictStore } from '#/store/dict';
 import { getDictOptions } from '#/utils/dict';
 import { useBeforeCloseDiff } from '#/utils/popup';
+
+const dictStore = useDictStore();
+
+const NOTICE_TYPE_FALLBACK = [
+  { label: '通知', value: '1' },
+  { label: '公告', value: '2' },
+];
+
+const noticeTypeOptions = computed(() => {
+  const options = getDictOptions(DictEnum.SYS_NOTICE_TYPE);
+  return options.length > 0 ? options : NOTICE_TYPE_FALLBACK;
+});
+
+async function ensureNoticeDicts() {
+  const types = [DictEnum.SYS_NOTICE_TYPE, DictEnum.SYS_NOTICE_STATUS];
+  await Promise.all(
+    types.map(async (dictType) => {
+      if (getDictOptions(dictType).length > 0)
+        return;
+      const resp = await dictDataInfo(dictType);
+      dictStore.setDictInfo(dictType, resp);
+    }),
+  );
+}
 
 const emit = defineEmits<{ reload: [] }>();
 
@@ -98,6 +124,7 @@ const [BasicModal, modalApi] = useVbenModal({
       return null;
     }
     modalApi.modalLoading(true);
+    await ensureNoticeDicts();
 
     const { id } = modalApi.getData() as { id?: number | string };
     isUpdate.value = !!id;
@@ -162,11 +189,11 @@ async function handleClosed() {
           />
         </FormItem>
         <FormItem label="公告类型" v-bind="validateInfos.noticeType">
-          <RadioGroup
-            button-style="solid"
-            option-type="button"
+          <Select
             v-model:value="formData.noticeType"
-            :options="getDictOptions(DictEnum.SYS_NOTICE_TYPE)"
+            :options="noticeTypeOptions"
+            placeholder="请选择公告类型"
+            allow-clear
           />
         </FormItem>
       </div>

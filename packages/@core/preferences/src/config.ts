@@ -27,7 +27,7 @@ const defaultPreferences: Preferences = {
     layout: 'sidebar-nav',
     locale: 'zh-CN',
     loginExpiredMode: 'page',
-    name: 'RuoYI AI Admin',
+    name: '码蚁AI ADMIN',
     preferencesButtonPosition: 'auto',
     watermark: false,
     watermarkContent: '',
@@ -65,7 +65,7 @@ const defaultPreferences: Preferences = {
   logo: {
     enable: true,
     fit: 'contain',
-    source: 'https://ruoyiai-1254149996.cos.ap-guangzhou.myqcloud.com/2026/03/15/4b7e93a72bf04805ae59985cc0845ef1.png',
+    source: '/mayi-logo.png',
   },
   navigation: {
     accordion: true,
